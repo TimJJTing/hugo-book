@@ -47,10 +47,24 @@
   {{ end -}}
 
 
-  <div class="tooltip">
+  <span class="internal-link">
   <a href="{{ $internal | safeURL }}"{{with .Title}}{{.}}{{end}}>
   {{ .Text | safeHTML }}</a>
-  <div class="right bottom">
+  <span class="iframe-preview">
+    <iframe
+      src="{{ $internal | safeURL }}"
+      onload="resizeIframe(this)"
+      style="border:0px #FFFFFF none;"
+      name="test"
+      scrolling="no"
+      frameborder="0"
+      marginheight="0px"
+      marginwidth="0px"
+      height="2000px"
+      width="1000px">
+    </iframe>
+  </span>
+  <!-- <div class="right bottom">
   <div class="tooltip-title">{{ with .Page.GetPage .Destination}}{{.Title}}{{end}}</div>
   <div class="tooltip-excerpt">
   {{with .Page.GetPage .Destination}}
@@ -59,7 +73,7 @@
   {{ end }}
   {{with .Page.GetPage .Destination}}{{.Summary}}{{end}}
   </div>
-  </div>
-  </div>
+  </div> -->
+</span>
   {{- end -}}
 {{- end -}}

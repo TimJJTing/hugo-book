@@ -32,6 +32,13 @@
   <script defer src="{{ $swJS.RelPermalink }}" {{ template "integrity" $swJS }}></script>
 {{ end -}}
 
+<script type="text/javascript">
+  function resizeIframe(obj){
+     obj.style.height = 0;
+     obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+  }
+</script>
+
 {{- template "_internal/google_analytics.html" . -}}
 
 <!-- RSS -->
