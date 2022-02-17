@@ -1,7 +1,7 @@
 {{- if .Page.Site.Params.BookPortableLinks -}}
   {{- template "portable-link" . -}}
 {{- else -}}
-  <a href="{{ .Destination | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
+  {{- template "internal-link-preview" . -}}
 {{- end -}}
 
 {{- define "portable-link" -}}
@@ -25,4 +25,41 @@
     {{- end }}
   {{- end }}
   <a href="{{ $destination | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
+{{- end -}}
+
+{{- define "internal-link-preview" -}}
+  {{if strings.HasPrefix .Destination "http" }}
+  {{ $external := .Destination }}
+
+  <a href="{{ $external | safeURL }}"{{with .Title}}{{.}}{{end}}>
+  {{ .Text | safeHTML }}</a>
+
+  {{end}}
+
+
+  {{ if not (strings.HasPrefix .Destination "http") }}
+  {{ $internal := urls.Parse .Destination}}
+  {{- if $internal.Path -}}
+  {{ $fragment := "" }}
+  {{- with $internal.Fragment }}{{ $fragment = printf "#%s" . }}{{ end -}}
+  {{- with .Page.GetPage $internal.Path }}{{ $internal = printf "%s%s" .RelPermalink $fragment }}
+  {{ end }}
+  {{ end -}}
+
+
+  <div class="tooltip">
+  <a href="{{ $internal | safeURL }}"{{with .Title}}{{.}}{{end}}>
+  {{ .Text | safeHTML }}</a>
+  <div class="right bottom">
+  <div class="tooltip-title">{{ with .Page.GetPage .Destination}}{{.Title}}{{end}}</div>
+  <div class="tooltip-excerpt">
+  {{with .Page.GetPage .Destination}}
+  {{ with .Params.featured_image }}
+  <figure><img class="title-image" src="{{ index . 0 }}" alt=""></figure>{{ end }}
+  {{ end }}
+  {{with .Page.GetPage .Destination}}{{.Summary}}{{end}}
+  </div>
+  </div>
+  </div>
+  {{- end -}}
 {{- end -}}
