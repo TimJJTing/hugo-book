@@ -49,7 +49,6 @@
         onmouseleave="removePreview(this)"
       >
         <a href="{{ $internal | safeURL }}"{{ with .Title }}{{ . }}{{ end }}>{{ .Text | safeHTML }}</a>
-        <span class="preview"></span>
       </span>
     {{ end -}}
   {{- end -}}

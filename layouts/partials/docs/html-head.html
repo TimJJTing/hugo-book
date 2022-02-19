@@ -33,32 +33,63 @@
 {{ end -}}
 
 <script type="text/javascript">
-  function resizeIframe(obj){
-     obj.style.height = 0;
-     obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+  let timeout;
+  let currentPermalink;
+  function clearPreview(){
+    const containers = document.body.querySelectorAll("span#preview");
+    for (container of containers) {
+      container.remove();
+    }
+    currentPermalink = undefined;
   }
   function insertPreview(obj, permalink){
-    const node = obj.getElementsByClassName("preview")[0];
-    // preview article
-    fetch(permalink)
-      .then((response) => response.text())
-      .then((htmlString) => {
-        // Convert the HTML string into a document object
-        const parser = new DOMParser();
-        return parser.parseFromString(htmlString, 'text/html');
-      })
-      .then((html) => {
-        const article = html.querySelector("article.markdown");
-        node.appendChild(article);
-      })
-      .catch((err) => {
-        // There was an error
-        console.warn('cannot get link preview.', err);
-      });
+    let container = document.body.querySelector("span#preview");
+    if (container) {
+      clearTimeout(timeout);
+    } else {
+      container = document.createElement("span");
+      container.id = "preview";
+      container.onmouseenter = function() {
+        clearTimeout(timeout);
+      }
+      container.onmouseleave = function() {
+        timeout = setTimeout(clearPreview, 300);
+      }
+    }
+    // update preview position
+    const position = obj.getBoundingClientRect();
+    container.style.top = `${position.top}px`;
+    container.style.left = `${position.left}px`;
+    // update preview article content
+    if (permalink != currentPermalink) {
+      currentPermalink = permalink;
+      container.innerHTML = "";
+      fetch(permalink)
+        .then((response) => response.text())
+        .then((htmlString) => {
+          // Convert the HTML string into a document object
+          const parser = new DOMParser();
+          return parser.parseFromString(htmlString, 'text/html');
+        })
+        .then((html) => {
+          const article = html.querySelector("article.markdown");
+          // prevent nested internal link to be previewed
+          const nestedInternalLinks = article.querySelectorAll("span.internal-link");
+          for (nestedInternalLink of nestedInternalLinks) {
+            nestedInternalLink.onmouseenter = undefined;
+            nestedInternalLink.onmouseleave = undefined;
+          }
+          container.appendChild(article);
+          document.body.appendChild(container);
+        })
+        .catch((err) => {
+          // There was an error
+          console.warn('cannot get link preview.', err);
+        });
+    }
   }
   function removePreview(obj){
-    const node = obj.getElementsByClassName("preview")[0];
-    node.innerHTML = "";
+    timeout = setTimeout(clearPreview, 300);
   }
 </script>
 
