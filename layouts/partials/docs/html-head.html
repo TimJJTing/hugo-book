@@ -37,6 +37,29 @@
      obj.style.height = 0;
      obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
   }
+  function insertPreview(obj, permalink){
+    const node = obj.getElementsByClassName("preview")[0];
+    // preview article
+    fetch(permalink)
+      .then((response) => response.text())
+      .then((htmlString) => {
+        // Convert the HTML string into a document object
+        const parser = new DOMParser();
+        return parser.parseFromString(htmlString, 'text/html');
+      })
+      .then((html) => {
+        const article = html.querySelector("article.markdown");
+        node.appendChild(article);
+      })
+      .catch((err) => {
+        // There was an error
+        console.warn('cannot get link preview.', err);
+      });
+  }
+  function removePreview(obj){
+    const node = obj.getElementsByClassName("preview")[0];
+    node.innerHTML = "";
+  }
 </script>
 
 {{- template "_internal/google_analytics.html" . -}}

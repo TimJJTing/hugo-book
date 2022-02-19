@@ -5,34 +5,29 @@
   display: inline-block;
   position: relative;
 
-  .iframe-preview {
+  .preview {
     // display: none;
-    transition: 0.2s ease-in-out opacity, 0.2s ease-in-out transform, 0.2s ease-in-out max-height;
+    transition: 0.05s ease-in-out opacity, 0.05s ease-in-out transform, 0.05s ease-in-out max-height;
     opacity: 0;
     position: absolute;
     top: 110%;
     left: 50%;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
-    width: 230px;
-    padding-right: 30px;
-    height: 160px;
+    width: 480px;
+    height: 320px;
     max-height: 0;
+    padding-right: 30px;
     border: 4px solid #fff;
     overflow-x: hidden;
     overflow-y: hidden;
     transform-origin: center top;
     transform: translateX(-50%) translateY(-10px) scale(0.9);
-
-    iframe {
-      transform: scale(0.2);
-      transform-origin: 0 0;
-    }
   }
 
-  &:hover .iframe-preview {
+  &:hover .preview {
     // display: block;
     opacity: 1;
-    max-height: 160px;
+    max-height: 320px;
     transform: translateX(-50%) translateY(0) scale(1);
     overflow-y: auto;
   }

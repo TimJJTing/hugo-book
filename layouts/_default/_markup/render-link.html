@@ -29,51 +29,28 @@
 
 {{- define "internal-link-preview" -}}
   {{if strings.HasPrefix .Destination "http" }}
-  {{ $external := .Destination }}
-
-  <a href="{{ $external | safeURL }}"{{with .Title}}{{.}}{{end}}>
-  {{ .Text | safeHTML }}</a>
-
+    {{ $external := .Destination }}
+    <a href="{{ $external | safeURL }}"{{with .Title}}{{ . }}{{end}}>
+    {{ .Text | safeHTML }}</a>
   {{end}}
 
-
   {{ if not (strings.HasPrefix .Destination "http") }}
-  {{ $internal := urls.Parse .Destination}}
-  {{- if $internal.Path -}}
-  {{ $fragment := "" }}
-  {{- with $internal.Fragment }}{{ $fragment = printf "#%s" . }}{{ end -}}
-  {{- with .Page.GetPage $internal.Path }}{{ $internal = printf "%s%s" .RelPermalink $fragment }}
-  {{ end }}
-  {{ end -}}
-
-
-  <span class="internal-link">
-  <a href="{{ $internal | safeURL }}"{{with .Title}}{{.}}{{end}}>
-  {{ .Text | safeHTML }}</a>
-  <span class="iframe-preview">
-    <iframe
-      src="{{ $internal | safeURL }}"
-      onload="resizeIframe(this)"
-      style="border:0px #FFFFFF none;"
-      name="test"
-      scrolling="no"
-      frameborder="0"
-      marginheight="0px"
-      marginwidth="0px"
-      height="2000px"
-      width="1000px">
-    </iframe>
-  </span>
-  <!-- <div class="right bottom">
-  <div class="tooltip-title">{{ with .Page.GetPage .Destination}}{{.Title}}{{end}}</div>
-  <div class="tooltip-excerpt">
-  {{with .Page.GetPage .Destination}}
-  {{ with .Params.featured_image }}
-  <figure><img class="title-image" src="{{ index . 0 }}" alt=""></figure>{{ end }}
-  {{ end }}
-  {{with .Page.GetPage .Destination}}{{.Summary}}{{end}}
-  </div>
-  </div> -->
-</span>
+    {{ $internal := urls.Parse .Destination}}
+    {{- if $internal.Path }}
+      {{ $path := strings.TrimSuffix "/" $internal.Path }}
+      {{ $fragment := "" }}
+      {{- with $internal.Fragment }}{{ $fragment = printf "#%s" . }}{{ end -}}
+      {{- with .Page.GetPage $internal.Path }}
+        {{ $internal = printf "%s%s" .RelPermalink $fragment }}
+      {{ end -}}
+      <span
+        class="internal-link"
+        onmouseenter="insertPreview(this, {{ with .Page.GetPage $path}}{{.Permalink}}{{end}})"
+        onmouseleave="removePreview(this)"
+      >
+        <a href="{{ $internal | safeURL }}"{{ with .Title }}{{ . }}{{ end }}>{{ .Text | safeHTML }}</a>
+        <span class="preview"></span>
+      </span>
+    {{ end -}}
   {{- end -}}
 {{- end -}}
