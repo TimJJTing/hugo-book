@@ -33,33 +33,33 @@
 {{ end -}}
 
 <script type="text/javascript">
-  let timeout;
+  let insertTimer, removeTimer;
   let currentPermalink;
-  function clearPreview(){
+  function removePreview(){
     const containers = document.body.querySelectorAll("span#preview");
     for (container of containers) {
       container.remove();
     }
     currentPermalink = undefined;
   }
-  function insertPreview(obj, permalink){
+  function insertPreview(linkElement, permalink){
     let container = document.body.querySelector("span#preview");
     if (container) {
-      clearTimeout(timeout);
+      clearTimeout(removeTimer);
     } else {
       container = document.createElement("span");
       container.id = "preview";
       container.onmouseenter = function() {
-        clearTimeout(timeout);
+        clearTimeout(removeTimer);
       }
       container.onmouseleave = function() {
-        timeout = setTimeout(clearPreview, 300);
+        removeTimer = setTimeout(removePreview, 300);
       }
     }
     // update preview position
-    const position = obj.getBoundingClientRect();
+    const position = linkElement.getBoundingClientRect();
     container.style.top = `${position.top}px`;
-    container.style.left = `${position.left}px`;
+    container.style.left = `${position.left + position.width / 2}px`;
     // update preview article content
     if (permalink != currentPermalink) {
       currentPermalink = permalink;
@@ -88,8 +88,12 @@
         });
     }
   }
-  function removePreview(obj){
-    timeout = setTimeout(clearPreview, 300);
+  function onMouseEnterInternalLink(linkElement, permalink){
+    insertTimer = setTimeout(()=>insertPreview(linkElement, permalink), 500);
+  }
+  function onMouseLeaveInternalLink(linkElement){
+    clearTimeout(insertTimer);
+    removeTimer = setTimeout(removePreview, 300);
   }
 </script>
 

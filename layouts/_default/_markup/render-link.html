@@ -45,8 +45,8 @@
       {{ end -}}
       <span
         class="internal-link"
-        onmouseenter="insertPreview(this, {{ with .Page.GetPage $path}}{{.Permalink}}{{end}})"
-        onmouseleave="removePreview(this)"
+        onmouseenter="onMouseEnterInternalLink(this, {{ with .Page.GetPage $path}}{{.Permalink}}{{end}})"
+        onmouseleave="onMouseLeaveInternalLink(this)"
       >
         <a href="{{ $internal | safeURL }}"{{ with .Title }}{{ . }}{{ end }}>{{ .Text | safeHTML }}</a>
       </span>
